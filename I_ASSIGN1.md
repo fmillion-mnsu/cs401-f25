@@ -61,6 +61,7 @@ As we've discussed, microcontrollers and embedded systems tend to have very limi
 
 Consider this program:
 
+    import gc
     import json
     import time
     import random
@@ -99,7 +100,7 @@ Consider this program:
         
         # Now print the average of all of the "temperature" values.
         # (note: if we get here, we're probably not on a Pico...)
-        avg = sum([i['temperature'] for i in sensor_data])
+        avg = sum([i['temperature'] for i in sensor_data]) / len(sensor_data)
 
         print("The average temperature was:", avg)
         
@@ -110,7 +111,12 @@ Consider this program:
 
 Write this program into your MicroPython environment and try to run it. Observe what happens. Take a screenshot or paste the output into your submission.
 
-Finally, it's time to rework the problem into something that *can* run successfully on the Raspberry Pi Pico. Your task is to consider **how we can rework the program so that it successfully runs without crashing** while still being able to compute the average of 5,000 randomly generated sensor readings.
+Finally, it's time to rework the problem into something that *can* run successfully on the Raspberry Pi Pico. Your task is to consider **how we can rework the program so that it successfully runs without crashing** while still being able to compute the average of 5,000 randomly generated sensor readings. Adapt the code to fix the issue so it successfully runs all the way through 5,000 sensor readings.
+
+* You must still generate the full records - imagine the data is coming from an external sensor, and you can't just simply not receive the data you might not care about. You still have to store it and manage it.
+* Your program should output the average temperature when complete.
+* Your program must not crash from out of memory errors.
+* Keep the free memory report so you can observe if your changes are effective!
 
 # Submission
 

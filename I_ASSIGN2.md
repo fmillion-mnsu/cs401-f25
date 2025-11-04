@@ -6,13 +6,39 @@ While modern builds of MicroPython include Python's Big Integer capabilities, it
 
 ## Assignment:
 
-1. Change your existing MicroPython code to use a **generator** to generate the values. The values to be generated should include: 
+1. Change your existing MicroPython code to use a **generator** to generate simulated sensor values. The values to be generated should include: 
     - timestamp (for this, just consider this a number of seconds since the start; increment it once for each returned value.)
     - distance traveled (in millimeters) since the last value - you can randomize this within a window to try to indicate a certain "actual speed"
-2. Change the code to generate **10,000,000** (ten million) entries.
+
+    > Note: We are no longer generating temperature readings - so you can eliminate whatever code you already had generating records for Assignment 1.
+
+2. Change the code to generate **1,000,000** (ten million) entries.
 3. Use the **running average** method to keep a computation of the current *overall average*
+
+    The running average algorithm works as follows:
+
+    Each time you add a new value to the array, compute:
+    
+        new_avg = current_avg + (new_value - current_avg) / count
+    
+    where `count` is the *new* total number of values we are averaging (hint: increment `count` *before* computing the new average!)
+
+    **Hint:** **Remember order of operations**!
+
 4. Also, use the **running window average** method to keep a computation of the last **60 readings** (the last minute). This will let you compute the average miles-per-hour of travel, based on the last minute of readings.
-5. Add computations to display your calculations in miles-per-hour (remember, your virtual sensor should output *millimeters traveled*).
+
+    This method simply means to use a deque and store the last `n` values along with a running sum of those values. Each time a new value is added once the deque is full, first subtract the value of the first item in the deque from the running total (since that value will be shifted off when you enqueue the next value). Then continue with the usual operation of adding the next value to the running sum and enqueueing in the queue.
+
+5. Add computations to display your calculations in miles-per-hour (remember, your virtual sensor should output *millimeters traveled*). You should display:
+
+* A running window average of the last 60 records every 60 "seconds" (i.e. every 60 generated records - it will run much faster than one record per second!)
+* The *overall average* of *all readings* (by using the running average method from Step 3)
+* The total number of records processed - you can just print whatever static value you've decided on.
+
+## Hints
+
+* Make your generator flexible - have it accept a value for the number of records to generate. 
+* Test with smaller record sets first - try generating just 600 records, and also keep your existing code to compute the average traditionally (summing all values and dividing). Make sure your average works properly! Then remove the traditional sum-all-values average code and use only the rolling average code.
 
 # Submission
 

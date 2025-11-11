@@ -57,12 +57,14 @@ Your code should be able to process a request that looks like this:
     Accept-Encoding: gzip, deflate
     Accept-Language: en-US,en;q=0.9
 
+> Remember that this request ends with a blank line! Markdown formatting removes excess blank lines, so it's important to remember that the browser request and your response request must contain the blank line after the headers - this is what indicates "the request is done, what follows is the content if any."
+
 This request would be looking to retrieve your `/` route - your default root route.
 
 > [!TIP]
 > Browsers can send whichever headers they choose. You need to *consume* and *parse* all the headers, but you can **ignore** headers you don't care about - which in this case is most all of them!
 
-Your code should respond with exactly this type of response:
+Your code should respond with exactly this type of response (with your own data, of course!):
 
 ```
 HTTP/1.1 200 OK

@@ -39,9 +39,10 @@ Note that you can implement this on your computer *without needing to use the Pi
 
 6. For two of your three routes, write code that does something minimally dynamic. For example, you could print the current time on one route and print the number of seconds since the app started running in another route. 
 7. In each route, construct a return value to return to the client. 
-8. Using only a single piece of code (perhaps in a function, but not necessarily required), form the HTTP response as appropriate. I strongly recommend making a function that will produce a fully formed HTTP response ready for sending over the wire. I also recommend including at least two headers: `Content-Length`, which should be the total length of your response **in bytes** (**not** in characters!), and the other should be a content type - typical content types you'll want to consider are `text/plain` (for pure plain text), `text/html` (for HTML data), and `application/json` (for JSON data).
-9. Send your HTTP response and then immediately close the connection and wait for another connection.
-10. Test your code by accessing the server in your browser by connecting to `localhost`. 
+8. **If any other route is requested** other than one of your three, you should return an empty `404` response.
+9. Using only a single piece of code (perhaps in a function, but not necessarily required), form the HTTP response as appropriate. I strongly recommend making a function that will produce a fully formed HTTP response ready for sending over the wire. I also recommend including at least two headers: `Content-Length`, which should be the total length of your response **in bytes** (**not** in characters!), and the other should be a content type - typical content types you'll want to consider are `text/plain` (for pure plain text), `text/html` (for HTML data), and `application/json` (for JSON data).
+10. Send your HTTP response and then immediately close the connection and wait for another connection.
+11. Test your code by accessing the server in your browser by connecting to `localhost`. 
 
 ## Samples
 

@@ -2,25 +2,20 @@
 
 This is a **group** submission - you will work in small groups on this project.
 
-In this final project, you will design a very simple IoT device that allows reading a sensor and controlling a multicolor LED via a web interface.
+In this final project, you will design a very simple IoT device that allows controlling the LED on the Pi Pico board from a web page.
 
-You will use the Raspberry Pi Pico, along with the custom printed circuit board you have been given, to complete this task. The printed circuit board contains:
-
-* A DS1631 temperature sensor (connected to the I2C-0 bus)
-* An RGB LED, with its three signal lines connected to GPIO 16 (blue), 17 (green) and 18 (red)
-* A pushbutton with its signal connected to GPIO 19
+You will use the Raspberry Pi Pico to complete this task. For controlling the LED you can refer to the first assignment in this course, which explains how to use the GPIO interface to turn the LED on and off. The example code in [Assignment 1](I_ASSIGN1.md) should be all you need to get started. 
 
 ## Requirements
 
 Your project **must** incorporate the following functionality:
 
 * A simple, hand-coded HTTP server to serve the web pages. (See the Tips section for hints on doing this!) You don't need to do *extensive* error handling - just basic checks for validity are acceptable.
-* The web server should be able to share at least two pages - the main UI and a configuration page. The main page must provide, at minimum, a readout of the temperature sensor and a means of controlling the RGB LED. The configuration page must allow you to specify an SSID and password.
+* The web server should be able to share at least two pages - the main UI and a configuration page. The main page must provide a means of controlling the onboard LED. The configuration page must allow you to specify an SSID and password.
   * You do NOT need to implement Wi-Fi scanning functionality to select a broadcasting hotspot. You need only ask the user to type in their network SSID in one field and password in another.
 * The web server should accept the SSID and password given by the user in configuration as an HTTP POST request to a given endpoint. Upon receiving SSID and password, the device should store those values in a config file (e.g. `config.json`), return a success message to the user, and then *reboot* the Pi Pico.
     > ![TIP]
     > To reboot the Pico, import the `machine` library and run `machine.reset()`
-* When the button on the device is pressed, **toggle** the state of the LED light - if it is off, turn it on and vice versa. *This should track with on/off operations done via the web UI* - if the light was turned On via the web UI, even if it was last turned off by button, pressing the button should again turn the light off.
 * At startup (when your code begins running) the device should look for a config file. If a config file is found it should be read and the stored SSID and password should be acquired. In this case, the device should attempt to connect to the given hotspot for no less than 15 seconds. If, after 15 seconds, connection has not succeeded, the device should revert to configuration mode.
 * In configuration mode it should NOT be possible to view the main interface - attempting to do so should redirect the user to the config page.
 
@@ -73,43 +68,6 @@ def connect(ssid, password) -> bool:
     sta.active(False) # disable device so it can be later used for AP mode
     return False
 ```
-
-### Working with I2C
-
-The I2C bus is implemented in hardware on the Pico. This means you do *not* have to manage the actual signaling - you simply specify which pins your I2C device is connected to and use simple read/write operations to perform your functions.
-
-On the custom circuit board, the I2C interface is connected to GPIO pins 0 and 1. 
-
-To initialize an I2C interface, use this code:
-
-    from machine import Pin, I2C
-
-    i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400_000)
-
-Once you have an I2C interface, you can do the following:
-
-* `i2c.scan()`: Scan for I2C devices. Returns a list of addresses at which an I2C device was detected.
-* `i2c.writeto(addr, b'bytes')`: Write the bytes `bytes` to the I2C device at address `addr`. 
-* `i2c.readfrom(addr, n)`: Read `n` bytes from `addr`.
-
-Note that in I2C it's very common to first *write* a message and then immediately *receive* from the same device. For example, you might send a command that means "get current temperature", and you would then immediately read the correct number of bytes from the device that represents the temperature. (You will also need to do raw processing of those bytes in most cases!)
-
-### LED Colors
-
-The RGB LED on the custom circuit board can light in nearly any color imaginable. However, to save you the trouble of dealing with RGB values and conversion into PWM frequencies, you can simply work with the following table to create colors:
-
-| Red | Green | Blue | Color |
-|-----|-------|------|-------|
-| Off | Off   | Off  | <span style="color:#555555">Black</span> |
-| Off | Off   | On   | <span style="color:#0000ff">Blue</span> |
-| Off | On    | Off  | <span style="color:#00ff00">Green</span> |
-| Off | On    | On   | <span style="color:#00ffff">Cyan</span> |
-| On  | Off   | Off  | <span style="color:#ff0000">Red</span> |
-| On  | Off   | On   | <span style="color:#ff00ff">Magenta</span> |
-| On  | On    | Off  | <span style="color:#ffff00">Yellow</span> |
-| On  | On    | On   | <span style="color:#cccccc">White</span> |
-
-You can induce these colors by simply turning GPIOs 16, 17 and 18 on or off, respectively. Note that setting all three GPIOs to off equals "black" - i.e. the light goes out.
 
 ### Running your code
 
@@ -212,33 +170,3 @@ ap.config(essid='MicroPython', password='Password1234')
 **Connect to a hotspot (station mode)**
 
 See the [Checking Connectivity](#checking-connectivity) section for a complete example.
-
-**React when a button is pressed**
-
-```python
-from machine import Pin
-
-def button_handler(pin):
-    print("Button pressed!")
-    # Put code here that you want to run when the button is pressed.
-
-# Replace BUTTON_PIN with the GPIO number your button is connected to.
-# For the CS 401 project, the button is connected to GPIO 19.
-button = Pin(BUTTON_PIN, Pin.IN, Pin.PULL_UP)
-button.irq(trigger=Pin.IRQ_FALLING, handler=button_handler)
-```
-
-**Debouncing**
-
-*Debouncing* refers to the handling of repeated rapid triggers that can sometimes occur with button presses simply due to the physics of pressing the button. Miniscule variations in components can result in multiple triggers, milliseconds or even microseconds apart, occurring when the button is pressed. Debouncing involves tracking when the last button press occurred and ignoring successive presses that occur a very short time after the first press.
-
-```python
-last_press = 0 # initialize variable
-def button_handler(pin):
-    global last_press
-    now = time.ticks_ms()
-    if time.ticks_diff(now, last_press) > 200:  # 200 ms debounce
-        last_press = now
-        print("Button pressed!")
-        # do stuff here
-```

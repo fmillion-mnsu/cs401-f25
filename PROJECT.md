@@ -11,7 +11,7 @@ You will use the Raspberry Pi Pico to complete this task. For controlling the LE
 Your project **must** incorporate the following functionality:
 
 * A simple, hand-coded HTTP server to serve the web pages. (See the Tips section for hints on doing this!) You don't need to do *extensive* error handling - just basic checks for validity are acceptable.
-* The web server should be able to share at least two pages - the main UI and a configuration page. The main page must provide a means of controlling the onboard LED. The configuration page must allow you to specify an SSID and password.
+* The web server should be able to share at least two pages - the main UI and a configuration page. The main page must provide a means of controlling the onboard LED and also displaying the current state of the LED. The configuration page must allow you to specify an SSID and password.
   * You do NOT need to implement Wi-Fi scanning functionality to select a broadcasting hotspot. You need only ask the user to type in their network SSID in one field and password in another.
 * The web server should accept the SSID and password given by the user in configuration as an HTTP POST request to a given endpoint. Upon receiving SSID and password, the device should store those values in a config file (e.g. `config.json`), return a success message to the user, and then *reboot* the Pi Pico.
     > ![TIP]
@@ -170,3 +170,34 @@ ap.config(essid='MicroPython', password='Password1234')
 **Connect to a hotspot (station mode)**
 
 See the [Checking Connectivity](#checking-connectivity) section for a complete example.
+
+## Submission
+
+Submit the following to D2L:
+
+* All code for your MicroPico project (all .py files) zipped
+* Two screenshots:
+  * One showing the Pi Pico in setup mode - show the configuration UI in a browser (eith mobile or laptop is OK)
+  * One showing the Pi Pico in normal run mode - show the interface where the state of the LED and the button to toggle/switch it can be seen.
+  * You do not need to record videos of the project working - I will grade from the code and from your screenshots.
+
+## Rubric
+
+**120** points total.
+
+| Item | Score | Description
+|-|-|-|
+| HTTP Server Implementation | 40 | HTTP server correctly listens for connections on port 80, parses HTTP queries and responds with valid HTTP responses |
+| Wi-Fi | 40 | Device creates Wi-Fi hotspot when unconfigured or when connection fails; device provides config UI to receive user SSID and password; device applies those settings and automatically reboots to use them
+| LED Control | 15 | Device allows user to turn the LED on and off from a browser; browser shows the state of the LED on the main page |
+| General code quality | 25 | Code is well formed, uses appropriate comments, and follows good coding practices. |
+
+Point losses may occur if:
+
+* The device does not correctly provide a configuration hotspot
+* The device fails to correctly store and use the provided SSID and password
+* The device allows the user to control the LED while in AP mode (in AP mode, the HTTP server should always redirect to the configuration page unless accepting the POST request for the configuration data)
+* The LED functionality is not working or incorrectly represented (e.g. the website does not show or shows incorrect state for the LED)
+* Significant disregard for memory usage optimization - You don't need to go overboard, but there should be evidence of care with respect to RAM usage
+* Complete lack of comments or very inadequate comments
+
